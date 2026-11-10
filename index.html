@@ -1,0 +1,279 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Guest List Checkpoint</title>
+<meta name="description" content="Prove you know the couple to get your wedding invitation.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;600;800&family=Young+Serif&display=swap" rel="stylesheet">
+<style>
+:root{
+  --plum:#2a1233; --plum-2:#3d1c4a; --paper:#fbf4f8; --ink:#2a1233;
+  --pink:#ff4f8b; --gold:#e8b84a; --ok:#1f8a5b; --no:#d6232f;
+  --display:"Young Serif",Georgia,serif; --body:"Figtree",system-ui,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%}
+body{background:var(--plum);color:var(--paper);font-family:var(--body);font-size:1.0625rem;line-height:1.5;
+  background-image:radial-gradient(circle at 50% -10%,var(--plum-2),var(--plum) 60%);min-height:100vh}
+main{max-width:640px;margin:0 auto;padding:28px 16px 64px}
+h1,h2{font-family:var(--display);font-weight:400;line-height:1.1;margin:0}
+button{font:inherit;cursor:pointer}
+:focus-visible{outline:3px solid var(--gold);outline-offset:3px}
+.screen{display:none}.screen.on{display:block}
+
+/* intro */
+.badge{display:inline-block;background:var(--gold);color:var(--ink);font-weight:800;padding:6px 14px;border-radius:999px;font-size:.9rem;transform:rotate(-3deg)}
+#intro h1{font-size:clamp(2.6rem,10vw,4.6rem);margin:22px 0 16px}
+#intro p{max-width:46ch;color:#e9d9f0}
+.rules{margin:24px 0 32px;padding:0;list-style:none;display:grid;gap:10px;max-width:46ch}
+.rules li{padding-left:30px;position:relative}
+.rules li::before{content:"♥";position:absolute;left:0;color:var(--pink)}
+.btn{background:var(--pink);color:#fff;border:0;border-radius:14px;padding:16px 26px;font-weight:800;font-size:1.1rem;box-shadow:0 5px 0 #b02a5e;transition:transform .08s,box-shadow .08s}
+.btn:active{transform:translateY(4px);box-shadow:0 1px 0 #b02a5e}
+
+/* quiz */
+.hud{display:flex;justify-content:space-between;align-items:center;margin-bottom:22px;gap:12px}
+.progress{font-weight:600;color:#d8c2e3}
+.hearts{display:flex;gap:6px;font-size:1.7rem;line-height:1}
+.heart{color:var(--pink);transition:transform .3s,color .3s,opacity .3s}
+.heart.cracked{color:#6d4a7a;opacity:.55;transform:rotate(18deg) scale(.8)}
+.card{background:var(--paper);color:var(--ink);border-radius:22px;padding:26px 22px;box-shadow:0 10px 0 rgba(0,0,0,.25)}
+.card h2{font-size:clamp(1.5rem,5.5vw,2rem);margin-bottom:20px}
+.opts{display:grid;gap:10px}
+.opt{text-align:left;background:#fff;color:var(--ink);border:2px solid #e3cfe0;border-radius:14px;padding:14px 16px;font-weight:600;transition:border-color .12s,background .12s}
+.opt:hover:not(:disabled){border-color:var(--pink)}
+.opt.right{background:#d8f3e5;border-color:var(--ok)}
+.opt.wrong{background:#ffdfe1;border-color:var(--no);animation:shake .35s}
+.opt:disabled{cursor:default}
+.quip{min-height:3em;margin:18px 0 0;font-weight:600}
+.next{margin-top:12px;display:none}
+@keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+
+/* verdicts */
+.stamp{display:inline-block;font-family:var(--display);font-size:clamp(2.6rem,12vw,5rem);border:6px solid;padding:4px 22px;border-radius:10px;transform:rotate(-8deg);margin:8px 0 22px;animation:slam .45s cubic-bezier(.2,1.6,.4,1) both}
+.stamp.no{color:#ff6b73;border-color:#ff6b73}
+.stamp.ok{color:#5fe0a5;border-color:#5fe0a5}
+@keyframes slam{from{transform:rotate(-8deg) scale(2.6);opacity:0}to{transform:rotate(-8deg) scale(1);opacity:1}}
+#fail p,#fail li{max-width:46ch;color:#e9d9f0}
+.score{font-weight:800;color:var(--gold)}
+.link{background:none;border:0;color:var(--gold);text-decoration:underline;padding:12px 0;font-weight:600}
+
+/* invitation */
+#pass{padding-top:8px}
+.invite{background:var(--paper);color:var(--ink);border-radius:6px;padding:44px 26px;text-align:center;border:2px solid var(--gold);outline:10px solid var(--paper);outline-offset:-22px;box-shadow:0 14px 0 rgba(0,0,0,.25);margin-top:18px}
+.invite .small{font-weight:600;color:#6d4a7a}
+.invite h2{font-size:clamp(2.2rem,9vw,3.4rem);margin:14px 0}
+.invite .amp{color:var(--pink)}
+.invite dl{margin:28px 0 0;display:grid;gap:16px}
+.invite dt{font-weight:800;color:#6d4a7a;font-size:.95rem}
+.invite dd{margin:2px 0 0;font-family:var(--display);font-size:1.3rem}
+.rsvp{display:inline-block;margin-top:30px;text-decoration:none}
+.fine{margin-top:14px;font-size:.9rem;color:#6d4a7a}
+
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<main>
+
+<section id="intro" class="screen on">
+  <span class="badge">Guest list checkpoint</span>
+  <h1 id="introTitle">You're not on the list yet.</h1>
+  <p>Before you get an invitation, you have to prove you actually know the couple. It's only a few questions.</p>
+  <ul class="rules">
+    <li>Answer every question.</li>
+    <li>You can miss 4. The 5th wrong answer ends your night.</li>
+    <li>Pass and your real invitation unlocks.</li>
+  </ul>
+  <button class="btn" id="start">Check me in</button>
+</section>
+
+<section id="quiz" class="screen">
+  <div class="hud">
+    <span class="progress" id="progress"></span>
+    <span class="hearts" id="hearts" aria-label="Strikes remaining"></span>
+  </div>
+  <div class="card">
+    <h2 id="q"></h2>
+    <div class="opts" id="opts"></div>
+    <p class="quip" id="quip" aria-live="polite"></p>
+    <button class="btn next" id="next">Next question</button>
+  </div>
+</section>
+
+<section id="fail" class="screen">
+  <div class="stamp no">DENIED</div>
+  <h1 id="failTitle">Wow. Honestly, wow.</h1>
+  <p id="failText"></p>
+  <p class="score" id="failScore"></p>
+  <ul id="failList"></ul>
+  <button class="btn" id="retry">Appeal the decision</button>
+</section>
+
+<section id="pass" class="screen">
+  <div class="stamp ok">APPROVED</div>
+  <p id="passText"></p>
+  <div class="invite">
+    <div class="small">Together with their families</div>
+    <h2><span id="iBride"></span> <span class="amp">&amp;</span> <span id="iGroom"></span></h2>
+    <div class="small">invite you to celebrate their wedding</div>
+    <dl>
+      <div><dt>When</dt><dd id="iDate"></dd></div>
+      <div><dt>Where</dt><dd id="iPlace"></dd></div>
+      <div><dt>Dress code</dt><dd id="iDress"></dd></div>
+      <div><dt>Reply by</dt><dd id="iRsvp"></dd></div>
+    </dl>
+    <a class="btn rsvp" id="rsvpLink" href="#">RSVP</a>
+    <p class="fine" id="iNote"></p>
+  </div>
+</section>
+
+</main>
+
+<script>
+/* ============ EDIT THIS: all the wedding details live here ============ */
+const CONFIG = {
+  bride: "Bride Name",
+  groom: "Groom Name",
+  maxWrong: 4, // more than this = denied
+  invite: {
+    date: "Saturday, June 6, 2027 at 4:00 PM",
+    place: "Venue Name, City, State",
+    dress: "Formal. Yes, that means a tie.",
+    rsvpBy: "April 1, 2027",
+    rsvpLink: "mailto:replace-me@example.com?subject=RSVP",
+    note: "Placeholder invitation. Real details coming soon."
+  },
+  // answer = index of the correct option
+  questions: [
+    { q: "What is the bride's first name?", a: ["Bride Name", "Brenda", "Britney", "Bridget"], answer: 0 },
+    { q: "What is the groom's first name?", a: ["Gary", "Groom Name", "Gregory", "Gus"], answer: 1 },
+    { q: "How many years have they been together?", a: ["2", "3", "5", "8"], answer: 2 },
+    { q: "Where did they first meet?", a: ["A coffee shop", "College", "Through friends", "A dating app"], answer: 2 },
+    { q: "Who said \"I love you\" first?", a: ["The bride", "The groom", "Both, at the same time", "The dog"], answer: 0 },
+    { q: "Where did the proposal happen?", a: ["On a beach", "At home", "At a restaurant", "On a hike"], answer: 1 },
+    { q: "What is the couple's favorite food?", a: ["Tacos", "Sushi", "Pizza", "Pasta"], answer: 0 },
+    { q: "Who is the better cook?", a: ["The bride", "The groom", "Neither", "DoorDash"], answer: 3 },
+    { q: "What is the couple's pet called?", a: ["Pet Name", "Biscuit", "Mochi", "They have no pet"], answer: 0 },
+    { q: "Who takes longer to get ready?", a: ["The bride", "The groom", "Equal", "Don't make me pick"], answer: 1 }
+  ]
+};
+/* ====================================================================== */
+
+const WRONG_QUIPS = [
+  "Bold answer. Incorrect, but bold.",
+  "The couple just felt a disturbance.",
+  "Did you even read the save-the-date?",
+  "Strike. Somewhere, the groom's mother is taking notes.",
+  "That's your last chance. Choose like you love open bar.",
+];
+const RIGHT_QUIPS = [
+  "Correct. You may keep your plus-one.",
+  "Right. Suspiciously right.",
+  "Yes. You've clearly been paying attention.",
+  "Correct. Your seat is warming up.",
+];
+const FAIL_FINALES = [
+  "You missed too many. We love you, but not enough to seat you next to strangers who know the answers.",
+  "The couple has reviewed your results and would like you to know they're 'fine with it'. They are not fine with it.",
+];
+const $ = id => document.getElementById(id);
+let idx, wrong, missed, locked;
+
+function show(id){
+  document.querySelectorAll(".screen").forEach(s => s.classList.toggle("on", s.id === id));
+  window.scrollTo(0,0);
+}
+function pick(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+
+function renderHearts(){
+  const h = $("hearts"); h.innerHTML = "";
+  for(let i=0;i<CONFIG.maxWrong+1;i++){
+    const s = document.createElement("span");
+    s.className = "heart" + (i < wrong ? " cracked" : "");
+    s.textContent = i < wrong ? "♡" : "♥";
+    h.appendChild(s);
+  }
+  h.setAttribute("aria-label", `${CONFIG.maxWrong+1-wrong} strikes remaining`);
+}
+
+function start(){
+  idx = 0; wrong = 0; missed = [];
+  show("quiz"); renderQ();
+}
+
+function renderQ(){
+  const item = CONFIG.questions[idx];
+  locked = false;
+  $("progress").textContent = `Question ${idx+1} of ${CONFIG.questions.length}`;
+  $("q").textContent = item.q;
+  $("quip").textContent = "";
+  $("next").style.display = "none";
+  const box = $("opts"); box.innerHTML = "";
+  item.a.forEach((text,i) => {
+    const b = document.createElement("button");
+    b.className = "opt"; b.textContent = text;
+    b.addEventListener("click", () => answer(i, b));
+    box.appendChild(b);
+  });
+  renderHearts();
+}
+
+function answer(i, btn){
+  if(locked) return; locked = true;
+  const item = CONFIG.questions[idx];
+  const buttons = [...$("opts").children];
+  buttons.forEach(b => b.disabled = true);
+  if(i === item.answer){
+    btn.classList.add("right");
+    $("quip").textContent = pick(RIGHT_QUIPS);
+  } else {
+    btn.classList.add("wrong");
+    buttons[item.answer].classList.add("right");
+    wrong++; missed.push(item.q);
+    $("quip").textContent = wrong > CONFIG.maxWrong ? "That's strike five." : WRONG_QUIPS[Math.min(wrong-1, WRONG_QUIPS.length-1)];
+    renderHearts();
+  }
+  const n = $("next");
+  n.textContent = wrong > CONFIG.maxWrong ? "See my fate"
+    : idx === CONFIG.questions.length-1 ? "See my result" : "Next question";
+  n.style.display = "inline-block"; n.focus();
+}
+
+function advance(){
+  if(wrong > CONFIG.maxWrong) return fail();
+  idx++;
+  if(idx >= CONFIG.questions.length) return pass();
+  renderQ();
+}
+
+function fail(){
+  $("failText").textContent = pick(FAIL_FINALES);
+  $("failScore").textContent = `Strikes: ${wrong}. Allowed: ${CONFIG.maxWrong}.`;
+  const list = $("failList"); list.innerHTML = "";
+  missed.forEach(q => { const li = document.createElement("li"); li.textContent = `You missed: ${q}`; list.appendChild(li); });
+  show("fail");
+}
+
+function pass(){
+  const c = CONFIG, v = c.invite;
+  $("passText").textContent = wrong === 0
+    ? "Perfect score. You know them better than they know themselves. Your invitation:"
+    : `You made it with ${wrong} ${wrong===1?"strike":"strikes"}. Your invitation:`;
+  $("iBride").textContent = c.bride; $("iGroom").textContent = c.groom;
+  $("iDate").textContent = v.date; $("iPlace").textContent = v.place;
+  $("iDress").textContent = v.dress; $("iRsvp").textContent = v.rsvpBy;
+  $("rsvpLink").href = v.rsvpLink; $("iNote").textContent = v.note;
+  show("pass");
+}
+
+$("start").addEventListener("click", start);
+$("next").addEventListener("click", advance);
+$("retry").addEventListener("click", start);
+$("introTitle").textContent = `You're not on ${CONFIG.bride.split(" ")[0]} & ${CONFIG.groom.split(" ")[0]}'s list yet.`;
+</script>
+</body>
+</html>
