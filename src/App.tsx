@@ -7,13 +7,14 @@ type Question = {
   options: Record<Language, string[]>;
   answer: number;
 };
-type Screen = "intro" | "quiz" | "pass" | "fail";
+type Screen = "intro" | "quiz" | "verdict" | "pass" | "fail";
 type Feedback = { kind: "correct" | "wrong" | "bossWrong" | "thirdStrike"; variant: number };
 
 const COUPLE = {
   names: ["Sonia Jimenes", "Eric Parral"],
   mistakesAllowed: 2,
   googleFormUrl: "",
+  galleryPhotos: ["", "", ""],
 };
 
 const QUESTIONS: Question[] = [
@@ -32,7 +33,7 @@ const QUESTIONS: Question[] = [
   {
     id: "met",
     text: { en: "How did these two first meet?", es: "¿Cómo se conocieron?" },
-    options: { en: ["At a school dance", "On a Zoom call in high school", "Through mutual friends", "At a taco Tuesday"], es: ["En un baile escolar", "En una llamada de Zoom en la preparatoria", "Por amigos en común", "En un martes de tacos"] },
+    options: { en: ["At a school dance", "On a Zoom call in high school", "Through mutual friends", "In the school library"], es: ["En un baile escolar", "En una llamada de Zoom en la preparatoria", "Por amigos en común", "En la biblioteca de la escuela"] },
     answer: 1,
   },
   {
@@ -68,7 +69,7 @@ const QUESTIONS: Question[] = [
   {
     id: "groomjob",
     text: { en: "And Eric's line of work?", es: "¿Y a qué se dedica Eric?" },
-    options: { en: ["Integration Engineer", "Meteorologist", "Taco quality control", "Professional gamer"], es: ["Ingeniero de Integración", "Meteorólogo", "Inspector de calidad de tacos", "Jugador profesional"] },
+    options: { en: ["Integration Engineer", "Meteorologist", "Project Manager", "Professional gamer"], es: ["Ingeniero de Integración", "Meteorólogo", "Gerente de proyectos", "Jugador profesional"] },
     answer: 0,
   },
   {
@@ -88,6 +89,10 @@ const QUESTIONS: Question[] = [
 type Copy = {
   masthead: string;
   language: string;
+  galleryTitle: string;
+  gallerySubtitle: string;
+  galleryCaptions: string[];
+  photoComing: string;
   eyebrow: string;
   introTitle: React.ReactNode;
   introDescription: string;
@@ -104,6 +109,9 @@ type Copy = {
   next: string;
   reveal: string;
   verdict: string;
+  verdictTitle: string;
+  verdictCopy: string;
+  revealNow: string;
   denied: string;
   failTitle: string;
   failMessage: string;
@@ -133,24 +141,31 @@ type Copy = {
 
 const COPY: Record<Language, Copy> = {
   en: {
-    masthead: "A celebration of love, laughter & excellent tacos",
+    masthead: "A celebration of love, laughter & a life together",
     language: "Español",
+    galleryTitle: "The love story gallery",
+    gallerySubtitle: "A little life, lovingly collected",
+    galleryCaptions: ["The beginning", "The best chapter", "A question & a yes"],
+    photoComing: "Your photograph goes here",
     eyebrow: "A very official guest-list examination",
     introTitle: <>So, you think you know <em>us?</em></>,
     introDescription: "Before you get near the cake, the dance floor, or the open bar, there's one tiny question: how well do you know Sonia & Eric?",
-    rules: ["11 questions. No phone-a-friend.", "Two wrong answers are totally survivable.", "A third? Your invite takes a detour."],
+    rules: ["11 questions. No phone-a-friend.", "Answer every question; the verdict waits.", "Three wrong answers means you're out."],
     start: "Let's find out",
-    footer: "Made with love, a little spice, and a very selective guest list.",
+    footer: "Made with love, family stories, and a very selective guest list.",
     question: "Question",
     of: "of",
     mistakesLeft: (count: number) => `${count} ${count === 1 ? "mistake" : "mistakes"} left`,
     correct: ["Correct. Your seat remains tentatively reserved.", "Right! You've clearly been paying attention.", "Okay, show-off. Your plus-one is safe."],
     wrong: ["A confident answer. Unfortunately, confidence was not the question.", "Somewhere, the couple just felt a mysterious chill.", "The group chat will be hearing about this."],
-    bossWrong: "Nice try. The household committee has reviewed your answer and revoked your taco privileges.",
-    thirdStrike: "That's strike three. The committee has reached a decision.",
+    bossWrong: "Nice try. The household committee has reviewed your answer and revoked your remote-control privileges.",
+    thirdStrike: "That's three. The committee will deliver its verdict after the final question.",
     next: "Next question",
-    reveal: "Reveal my invitation",
-    verdict: "See the verdict",
+    reveal: "Submit final answer",
+    verdict: "Continue",
+    verdictTitle: "The gallery committee is deliberating",
+    verdictCopy: "Every answer is in. One moment while the guest-list committee reaches its very official decision.",
+    revealNow: "I can't take the suspense — show me",
     denied: "A very different kind of invitation",
     failTitle: "We regret to inform you...",
     failMessage: "We love you dearly. We simply cannot trust you with a seating chart after this performance.",
@@ -178,24 +193,31 @@ const COPY: Record<Language, Copy> = {
     restart: "Take the quiz again",
   },
   es: {
-    masthead: "Una celebración de amor, alegría y buenos tacos",
+    masthead: "Una celebración de amor, risas y una vida juntos",
     language: "English",
+    galleryTitle: "La galería de nuestra historia",
+    gallerySubtitle: "Un poquito de vida, con mucho cariño",
+    galleryCaptions: ["El comienzo", "El mejor capítulo", "Una pregunta y un sí"],
+    photoComing: "Aquí va su fotografía",
     eyebrow: "Un examen muy oficial de la lista de invitados",
     introTitle: <>¿Así que dices que <em>nos conoces?</em></>,
     introDescription: "Antes de acercarte al pastel, la pista de baile o la barra libre, una preguntita: ¿qué tanto conoces a Sonia y Eric?",
-    rules: ["11 preguntas. Sin ayuda de tus amigos.", "Puedes fallar dos veces y sobrevivir.", "¿La tercera? Tu invitación toma otro rumbo."],
+    rules: ["11 preguntas. Sin ayuda de tus amigos.", "Contesta todas; el veredicto espera.", "Con tres errores, quedas fuera."],
     start: "¡A ver qué tanto sabes!",
-    footer: "Hecho con amor, un poquito de picante y una lista muy selectiva.",
+    footer: "Hecho con amor, historias familiares y una lista muy selectiva.",
     question: "Pregunta",
     of: "de",
     mistakesLeft: (count: number) => `${count} ${count === 1 ? "error restante" : "errores restantes"}`,
     correct: ["¡Correcto! Tu lugar sigue apartado... por ahora.", "¡Muy bien! Sí has estado poniendo atención.", "Bueno, presumido. Tu acompañante está a salvo."],
     wrong: ["Respuesta segura. Lástima que no preguntamos por seguridad.", "En algún lugar, la pareja acaba de sentir un escalofrío.", "El chat familiar se va a enterar de esto."],
-    bossWrong: "Casi. El comité de la casa revisó tu respuesta y te quitó tus privilegios de tacos.",
-    thirdStrike: "Tercer error. El comité ya tomó una decisión.",
+    bossWrong: "Casi. El comité de la casa revisó tu respuesta y te quitó el control remoto.",
+    thirdStrike: "Ya son tres errores. El comité dará su veredicto después de la última pregunta.",
     next: "Siguiente pregunta",
-    reveal: "Revelar mi invitación",
+    reveal: "Enviar respuesta final",
     verdict: "Veredicto final",
+    verdictTitle: "El comité de la galería está deliberando",
+    verdictCopy: "Ya tenemos todas tus respuestas. Un momento mientras el comité de invitados toma su decisión muy oficial.",
+    revealNow: "Ya no aguanto la intriga — mostrar resultado",
     denied: "Una invitación muy diferente",
     failTitle: "Lamentamos informarte...",
     failMessage: "Te queremos mucho, pero después de esto no te podemos confiar el plano de las mesas.",
@@ -234,6 +256,7 @@ function App() {
   const [missedQuestions, setMissedQuestions] = useState<Question[]>([]);
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
   const [feedback, setFeedback] = useState<Feedback | null>(null);
+  const [verdictCountdown, setVerdictCountdown] = useState(3);
   const t = COPY[language];
   const question = QUESTIONS[questionIndex];
   const feedbackText = feedback === null ? "" : feedback.kind === "correct"
@@ -245,6 +268,19 @@ function App() {
   useEffect(() => {
     document.documentElement.lang = language;
   }, [language]);
+
+  useEffect(() => {
+    if (screen !== "verdict") return;
+    if (verdictCountdown === 0) {
+      const timeout = window.setTimeout(() => {
+        setScreen(wrongAnswers > COUPLE.mistakesAllowed ? "fail" : "pass");
+      }, 450);
+      return () => window.clearTimeout(timeout);
+    }
+
+    const timeout = window.setTimeout(() => setVerdictCountdown(verdictCountdown - 1), 1000);
+    return () => window.clearTimeout(timeout);
+  }, [screen, verdictCountdown, wrongAnswers]);
 
   function startQuiz() {
     setQuestionIndex(0);
@@ -274,10 +310,9 @@ function App() {
   }
 
   function advance() {
-    if (wrongAnswers > COUPLE.mistakesAllowed) {
-      setScreen("fail");
-    } else if (questionIndex === QUESTIONS.length - 1) {
-      setScreen("pass");
+    if (questionIndex === QUESTIONS.length - 1) {
+      setVerdictCountdown(3);
+      setScreen("verdict");
     } else {
       setQuestionIndex(questionIndex + 1);
       setSelectedAnswer(null);
@@ -285,9 +320,13 @@ function App() {
     }
   }
 
+  function revealVerdict() {
+    setScreen(wrongAnswers > COUPLE.mistakesAllowed ? "fail" : "pass");
+  }
+
   return (
     <div className="page-shell">
-      <div className="confetti" aria-hidden="true">
+      <div className={`confetti${screen === "pass" ? " celebrate" : ""}`} aria-hidden="true">
         {CONFETTI.map((shape, index) => <span key={index} style={{ "--i": index } as React.CSSProperties}>{shape}</span>)}
       </div>
       <header className="site-header">
@@ -298,13 +337,30 @@ function App() {
         </button>
       </header>
 
-      <div className="papel" aria-hidden="true">
-        {Array.from({ length: 7 }, (_, index) => <span className={`flag flag-${index % 4}`} key={index}><i>✿</i></span>)}
-      </div>
-
       <main className="main-content">
         {screen === "intro" && (
           <section className="intro-card" key="intro">
+            <div className="museum-entry">
+              <div className="gallery-heading">
+                <span>SONIA &amp; ERIC · NO. 01</span>
+                <p>{t.galleryTitle}</p>
+                <small>{t.gallerySubtitle}</small>
+              </div>
+              <div className="gallery-wall">
+                {COUPLE.galleryPhotos.map((photo, index) => (
+                  <figure className={`gallery-frame gallery-frame-${index + 1}`} key={index}>
+                    <div className="frame-mat">
+                      {photo
+                        ? <img src={photo} alt={`Sonia and Eric — ${t.galleryCaptions[index]}`} />
+                        : <div className={`photo-placeholder placeholder-${index + 1}`}><span aria-hidden="true">S <i>&amp;</i> E</span><small>{t.photoComing}</small></div>}
+                    </div>
+                    <figcaption>{t.galleryCaptions[index]}</figcaption>
+                  </figure>
+                ))}
+              </div>
+              <span className="museum-door museum-door-left" aria-hidden="true" />
+              <span className="museum-door museum-door-right" aria-hidden="true" />
+            </div>
             <p className="eyebrow"><span>✦</span> {t.eyebrow} <span>✦</span></p>
             <h1>{t.introTitle}</h1>
             <p className="intro-copy">{t.introDescription}</p>
@@ -344,11 +400,26 @@ function App() {
               <p className="feedback" aria-live="polite">{feedbackText}</p>
               {selectedAnswer !== null && (
                 <button className="primary-button next-button" onClick={advance}>
-                  {wrongAnswers > COUPLE.mistakesAllowed ? t.verdict : questionIndex === QUESTIONS.length - 1 ? t.reveal : t.next}<span aria-hidden="true"> →</span>
+                  {questionIndex === QUESTIONS.length - 1 ? t.reveal : t.next}<span aria-hidden="true"> →</span>
                 </button>
               )}
             </article>
             <p className="quiz-whisper">{language === "en" ? "Choose wisely. The aunties are watching." : "Elige bien. Las tías están observando."}</p>
+          </section>
+        )}
+
+        {screen === "verdict" && (
+          <section className="result-card verdict-room" key="verdict" aria-live="polite">
+            <p className="result-stamp">{language === "en" ? "Final review" : "Revisión final"}</p>
+            <div className="verdict-arch">
+              <p>{t.verdictTitle}</p>
+              <div className="countdown-wrap">
+                <span className="countdown-halo" key={verdictCountdown} />
+                <strong key={`number-${verdictCountdown}`}>{verdictCountdown || "✦"}</strong>
+              </div>
+              <p className="verdict-copy">{t.verdictCopy}</p>
+              <button className="text-button reveal-now" onClick={revealVerdict}>{t.revealNow}</button>
+            </div>
           </section>
         )}
 
