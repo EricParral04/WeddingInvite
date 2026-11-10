@@ -8,6 +8,7 @@ type Question = {
   answer: number;
 };
 type Screen = "intro" | "quiz" | "pass" | "fail";
+type Feedback = { kind: "correct" | "wrong" | "bossWrong" | "thirdStrike"; variant: number };
 
 const COUPLE = {
   names: ["Sonia Jimenes", "Eric Parral"],
@@ -232,9 +233,14 @@ function App() {
   const [wrongAnswers, setWrongAnswers] = useState(0);
   const [missedQuestions, setMissedQuestions] = useState<Question[]>([]);
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
-  const [feedback, setFeedback] = useState("");
+  const [feedback, setFeedback] = useState<Feedback | null>(null);
   const t = COPY[language];
   const question = QUESTIONS[questionIndex];
+  const feedbackText = feedback === null ? "" : feedback.kind === "correct"
+    ? t.correct[feedback.variant]
+    : feedback.kind === "wrong"
+      ? t.wrong[feedback.variant]
+      : t[feedback.kind];
 
   useEffect(() => {
     document.documentElement.lang = language;
@@ -245,7 +251,7 @@ function App() {
     setWrongAnswers(0);
     setMissedQuestions([]);
     setSelectedAnswer(null);
-    setFeedback("");
+    setFeedback(null);
     setScreen("quiz");
   }
 
@@ -253,16 +259,18 @@ function App() {
     if (selectedAnswer !== null) return;
     setSelectedAnswer(index);
     if (index === question.answer) {
-      setFeedback(t.correct[Math.floor(Math.random() * t.correct.length)]);
+      setFeedback({ kind: "correct", variant: Math.floor(Math.random() * t.correct.length) });
       return;
     }
 
     const newWrongAnswers = wrongAnswers + 1;
     setWrongAnswers(newWrongAnswers);
     setMissedQuestions([...missedQuestions, question]);
-    setFeedback(question.id === "incharge" ? t.bossWrong : newWrongAnswers > COUPLE.mistakesAllowed
-      ? t.thirdStrike
-      : t.wrong[Math.floor(Math.random() * t.wrong.length)]);
+    setFeedback(question.id === "incharge"
+      ? { kind: "bossWrong", variant: 0 }
+      : newWrongAnswers > COUPLE.mistakesAllowed
+        ? { kind: "thirdStrike", variant: 0 }
+        : { kind: "wrong", variant: Math.floor(Math.random() * t.wrong.length) });
   }
 
   function advance() {
@@ -273,7 +281,7 @@ function App() {
     } else {
       setQuestionIndex(questionIndex + 1);
       setSelectedAnswer(null);
-      setFeedback("");
+      setFeedback(null);
     }
   }
 
@@ -333,7 +341,7 @@ function App() {
                   );
                 })}
               </div>
-              <p className="feedback" aria-live="polite">{feedback}</p>
+              <p className="feedback" aria-live="polite">{feedbackText}</p>
               {selectedAnswer !== null && (
                 <button className="primary-button next-button" onClick={advance}>
                   {wrongAnswers > COUPLE.mistakesAllowed ? t.verdict : questionIndex === QUESTIONS.length - 1 ? t.reveal : t.next}<span aria-hidden="true"> →</span>
