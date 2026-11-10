@@ -15,6 +15,8 @@ Check the production build with `npm run build`.
 
 The couple facts, quiz, gallery photo paths, and RSVP URL are in `src/App.tsx`. Update the invitation details there when the date and venue are confirmed. The three gallery frames currently show artwork placeholders; once photos are supplied, add the image files under `public/images/` and set their paths in `COUPLE.galleryPhotos`.
 
+Guests first enter the museum, move through its three gallery stops, then click the stool to begin the quiz. The quiz uses three visible lives: the third wrong answer means the guest is out, but the result is revealed only after all questions are answered.
+
 Guests see the RSVP form only after passing the quiz. To collect responses in a Sheet:
 
 1. Create a Google Form with guest name, party size (no limit), additional guest names, and any optional dietary/accessibility notes or song request.
@@ -25,7 +27,7 @@ The site does not collect or store guest responses itself.
 
 ## Visual direction
 
-The gallery styling takes cues from Oaxaca's historic green-quarry architecture and the Museo Textil de Oaxaca's focus on textiles, design, and creative process. The geometric frame patterns on this site are original decorative artwork, not reproductions of a community-specific textile design.
+The gallery styling takes cues from Oaxaca's historic green-quarry architecture and the Museo Textil de Oaxaca's focus on textiles, design, and creative process. Candlelit rooms and richly colored, handmade storybook details add a folkloric mood. The geometric frame patterns on this site are original decorative artwork, not reproductions of a community-specific textile design or a specific film.
 
 - [Museo Textil de Oaxaca — museum and building history](https://museotextildeoaxaca.org/museo/)
 - [Oaxaca tourism — Oaxaca City and its green quarry architecture](https://www.oaxaca.travel/index.php/en-us/all-destinations/ciudad-de-oaxaca-en)

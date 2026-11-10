@@ -7,12 +7,12 @@ type Question = {
   options: Record<Language, string[]>;
   answer: number;
 };
-type Screen = "intro" | "quiz" | "verdict" | "pass" | "fail";
+type Screen = "intro" | "museum" | "quiz" | "verdict" | "pass" | "fail";
 type Feedback = { kind: "correct" | "wrong" | "bossWrong" | "thirdStrike"; variant: number };
 
 const COUPLE = {
   names: ["Sonia Jimenes", "Eric Parral"],
-  mistakesAllowed: 2,
+  totalLives: 3,
   googleFormUrl: "",
   galleryPhotos: ["", "", ""],
 };
@@ -89,6 +89,13 @@ const QUESTIONS: Question[] = [
 type Copy = {
   masthead: string;
   language: string;
+  enterMuseum: string;
+  galleryWalk: string;
+  galleryProgress: (current: number, total: number) => string;
+  galleryDescription: string[];
+  walkOn: string;
+  stoolLabel: string;
+  stoolAction: string;
   galleryTitle: string;
   gallerySubtitle: string;
   galleryCaptions: string[];
@@ -101,7 +108,7 @@ type Copy = {
   footer: string;
   question: string;
   of: string;
-  mistakesLeft: (count: number) => string;
+  livesLeft: (count: number) => string;
   correct: string[];
   wrong: string[];
   bossWrong: string;
@@ -143,6 +150,17 @@ const COPY: Record<Language, Copy> = {
   en: {
     masthead: "A celebration of love, laughter & a life together",
     language: "Español",
+    enterMuseum: "Enter the gallery",
+    galleryWalk: "Walk through our story",
+    galleryProgress: (current: number, total: number) => `Gallery ${current} of ${total}`,
+    galleryDescription: [
+      "Every good story has a beginning. Here is ours.",
+      "One little call turned into years of being each other's favorite person.",
+      "And then came a question, a yes, and this whole celebration.",
+    ],
+    walkOn: "Continue through the gallery",
+    stoolLabel: "The guest-list examination",
+    stoolAction: "Take a seat & begin",
     galleryTitle: "The love story gallery",
     gallerySubtitle: "A little life, lovingly collected",
     galleryCaptions: ["The beginning", "The best chapter", "A question & a yes"],
@@ -155,7 +173,7 @@ const COPY: Record<Language, Copy> = {
     footer: "Made with love, family stories, and a very selective guest list.",
     question: "Question",
     of: "of",
-    mistakesLeft: (count: number) => `${count} ${count === 1 ? "mistake" : "mistakes"} left`,
+    livesLeft: (count: number) => `${count} ${count === 1 ? "life" : "lives"} left`,
     correct: ["Correct. Your seat remains tentatively reserved.", "Right! You've clearly been paying attention.", "Okay, show-off. Your plus-one is safe."],
     wrong: ["A confident answer. Unfortunately, confidence was not the question.", "Somewhere, the couple just felt a mysterious chill.", "The group chat will be hearing about this."],
     bossWrong: "Nice try. The household committee has reviewed your answer and revoked your remote-control privileges.",
@@ -169,7 +187,7 @@ const COPY: Record<Language, Copy> = {
     denied: "A very different kind of invitation",
     failTitle: "We regret to inform you...",
     failMessage: "We love you dearly. We simply cannot trust you with a seating chart after this performance.",
-    failScore: (wrong: number) => `${wrong} wrong. ${COUPLE.mistakesAllowed} allowed. The math is not in your favor.`,
+    failScore: (wrong: number) => `${wrong} wrong. ${COUPLE.totalLives - 1} allowed. The math is not in your favor.`,
     rejectTitle: "You're cordially invited to reconsider your answers.",
     rejectBody: "Join us for an intimate evening of awkward eye contact and quietly Googling the couple's relationship history.",
     attire: "Attire:",
@@ -195,6 +213,17 @@ const COPY: Record<Language, Copy> = {
   es: {
     masthead: "Una celebración de amor, risas y una vida juntos",
     language: "English",
+    enterMuseum: "Entrar a la galería",
+    galleryWalk: "Recorre nuestra historia",
+    galleryProgress: (current: number, total: number) => `Galería ${current} de ${total}`,
+    galleryDescription: [
+      "Toda buena historia tiene un comienzo. Este es el nuestro.",
+      "Una llamada se convirtió en años de ser la persona favorita del otro.",
+      "Después llegó una pregunta, un sí y toda esta celebración.",
+    ],
+    walkOn: "Continuar por la galería",
+    stoolLabel: "El examen de la lista de invitados",
+    stoolAction: "Toma asiento y comienza",
     galleryTitle: "La galería de nuestra historia",
     gallerySubtitle: "Un poquito de vida, con mucho cariño",
     galleryCaptions: ["El comienzo", "El mejor capítulo", "Una pregunta y un sí"],
@@ -207,7 +236,7 @@ const COPY: Record<Language, Copy> = {
     footer: "Hecho con amor, historias familiares y una lista muy selectiva.",
     question: "Pregunta",
     of: "de",
-    mistakesLeft: (count: number) => `${count} ${count === 1 ? "error restante" : "errores restantes"}`,
+    livesLeft: (count: number) => `${count} ${count === 1 ? "vida" : "vidas"} restantes`,
     correct: ["¡Correcto! Tu lugar sigue apartado... por ahora.", "¡Muy bien! Sí has estado poniendo atención.", "Bueno, presumido. Tu acompañante está a salvo."],
     wrong: ["Respuesta segura. Lástima que no preguntamos por seguridad.", "En algún lugar, la pareja acaba de sentir un escalofrío.", "El chat familiar se va a enterar de esto."],
     bossWrong: "Casi. El comité de la casa revisó tu respuesta y te quitó el control remoto.",
@@ -221,7 +250,7 @@ const COPY: Record<Language, Copy> = {
     denied: "Una invitación muy diferente",
     failTitle: "Lamentamos informarte...",
     failMessage: "Te queremos mucho, pero después de esto no te podemos confiar el plano de las mesas.",
-    failScore: (wrong: number) => `${wrong} errores. Se permiten ${COUPLE.mistakesAllowed}. Las matemáticas no están de tu lado.`,
+    failScore: (wrong: number) => `${wrong} errores. Se permiten ${COUPLE.totalLives - 1}. Las matemáticas no están de tu lado.`,
     rejectTitle: "Te invitamos cordialmente a reconsiderar tus respuestas.",
     rejectBody: "Acompáñanos en una velada íntima de miradas incómodas y búsquedas discretas en Google sobre la pareja.",
     attire: "Vestimenta:",
@@ -251,6 +280,7 @@ const CONFETTI = ["✦", "✿", "◆", "✧", "❋"];
 function App() {
   const [language, setLanguage] = useState<Language>("en");
   const [screen, setScreen] = useState<Screen>("intro");
+  const [galleryStep, setGalleryStep] = useState(0);
   const [questionIndex, setQuestionIndex] = useState(0);
   const [wrongAnswers, setWrongAnswers] = useState(0);
   const [missedQuestions, setMissedQuestions] = useState<Question[]>([]);
@@ -273,7 +303,7 @@ function App() {
     if (screen !== "verdict") return;
     if (verdictCountdown === 0) {
       const timeout = window.setTimeout(() => {
-        setScreen(wrongAnswers > COUPLE.mistakesAllowed ? "fail" : "pass");
+        setScreen(wrongAnswers >= COUPLE.totalLives ? "fail" : "pass");
       }, 450);
       return () => window.clearTimeout(timeout);
     }
@@ -291,6 +321,15 @@ function App() {
     setScreen("quiz");
   }
 
+  function enterMuseum() {
+    setGalleryStep(0);
+    setScreen("museum");
+  }
+
+  function walkGallery() {
+    setGalleryStep(step => Math.min(step + 1, COUPLE.galleryPhotos.length - 1));
+  }
+
   function answerQuestion(index: number) {
     if (selectedAnswer !== null) return;
     setSelectedAnswer(index);
@@ -304,7 +343,7 @@ function App() {
     setMissedQuestions([...missedQuestions, question]);
     setFeedback(question.id === "incharge"
       ? { kind: "bossWrong", variant: 0 }
-      : newWrongAnswers > COUPLE.mistakesAllowed
+      : newWrongAnswers >= COUPLE.totalLives
         ? { kind: "thirdStrike", variant: 0 }
         : { kind: "wrong", variant: Math.floor(Math.random() * t.wrong.length) });
   }
@@ -321,7 +360,7 @@ function App() {
   }
 
   function revealVerdict() {
-    setScreen(wrongAnswers > COUPLE.mistakesAllowed ? "fail" : "pass");
+    setScreen(wrongAnswers >= COUPLE.totalLives ? "fail" : "pass");
   }
 
   return (
@@ -340,26 +379,11 @@ function App() {
       <main className="main-content">
         {screen === "intro" && (
           <section className="intro-card" key="intro">
-            <div className="museum-entry">
-              <div className="gallery-heading">
-                <span>SONIA &amp; ERIC · NO. 01</span>
-                <p>{t.galleryTitle}</p>
-                <small>{t.gallerySubtitle}</small>
-              </div>
-              <div className="gallery-wall">
-                {COUPLE.galleryPhotos.map((photo, index) => (
-                  <figure className={`gallery-frame gallery-frame-${index + 1}`} key={index}>
-                    <div className="frame-mat">
-                      {photo
-                        ? <img src={photo} alt={`Sonia and Eric — ${t.galleryCaptions[index]}`} />
-                        : <div className={`photo-placeholder placeholder-${index + 1}`}><span aria-hidden="true">S <i>&amp;</i> E</span><small>{t.photoComing}</small></div>}
-                    </div>
-                    <figcaption>{t.galleryCaptions[index]}</figcaption>
-                  </figure>
-                ))}
-              </div>
-              <span className="museum-door museum-door-left" aria-hidden="true" />
-              <span className="museum-door museum-door-right" aria-hidden="true" />
+            <div className="museum-entrance-art" aria-hidden="true">
+              <span className="entrance-arch" />
+              <span className="entrance-door entrance-door-left" />
+              <span className="entrance-door entrance-door-right" />
+              <span className="entrance-light">✦</span>
             </div>
             <p className="eyebrow"><span>✦</span> {t.eyebrow} <span>✦</span></p>
             <h1>{t.introTitle}</h1>
@@ -367,8 +391,61 @@ function App() {
             <div className="rule-list">
               {t.rules.map((rule, index) => <div className="rule" key={rule}><span>{String(index + 1).padStart(2, "0")}</span><p>{rule}</p></div>)}
             </div>
-            <button className="primary-button" onClick={startQuiz}>{t.start}<span aria-hidden="true"> ↗</span></button>
+            <button className="primary-button" onClick={enterMuseum}>{t.enterMuseum}<span aria-hidden="true"> ↗</span></button>
             <p className="small-note">Sonia Jimenes <span>♥</span> Eric Parral</p>
+          </section>
+        )}
+
+        {screen === "museum" && (
+          <section className="museum-tour" key="museum">
+            <div className="museum-tour-heading">
+              <p className="eyebrow"><span>✦</span> SONIA &amp; ERIC · NO. 01 <span>✦</span></p>
+              <h1>{t.galleryTitle}</h1>
+              <p>{t.gallerySubtitle}</p>
+            </div>
+            <div className={`museum-corridor${galleryStep === COUPLE.galleryPhotos.length - 1 ? " at-end" : ""}`}>
+              <span className="corridor-wall corridor-wall-left" aria-hidden="true" />
+              <span className="corridor-wall corridor-wall-right" aria-hidden="true" />
+              <div className="corridor-perspective" aria-hidden="true" />
+              <span className="museum-candle candle-left" aria-hidden="true" />
+              <span className="museum-candle candle-right" aria-hidden="true" />
+              <span className="museum-candle candle-far-left" aria-hidden="true" />
+              <span className="museum-candle candle-far-right" aria-hidden="true" />
+              <div className="corridor-gallery" key={galleryStep}>
+                <p className="corridor-progress">{t.galleryProgress(galleryStep + 1, COUPLE.galleryPhotos.length)}</p>
+                <figure className={`tour-frame tour-frame-${galleryStep + 1}`}>
+                  <div className="tour-frame-mat">
+                    {COUPLE.galleryPhotos[galleryStep]
+                      ? <img src={COUPLE.galleryPhotos[galleryStep]} alt={`Sonia and Eric — ${t.galleryCaptions[galleryStep]}`} />
+                      : <div className={`photo-placeholder placeholder-${galleryStep + 1}`}><span aria-hidden="true">S <i>&amp;</i> E</span><small>{t.photoComing}</small></div>}
+                  </div>
+                  <figcaption>{t.galleryCaptions[galleryStep]}</figcaption>
+                </figure>
+                <p className="gallery-story">{t.galleryDescription[galleryStep]}</p>
+              </div>
+              <div className="museum-stool-zone" aria-live="polite">
+                {galleryStep === COUPLE.galleryPhotos.length - 1 && (
+                  <>
+                    <p className="stool-plaque">{t.stoolLabel}</p>
+                    <button className="museum-stool" onClick={startQuiz} aria-label={t.stoolAction}>
+                      <span className="stool-seat" />
+                      <span className="stool-apron" />
+                      <span className="stool-leg stool-leg-left" />
+                      <span className="stool-leg stool-leg-right" />
+                      <span className="stool-action">{t.stoolAction} <b aria-hidden="true">↗</b></span>
+                    </button>
+                  </>
+                )}
+              </div>
+            </div>
+            {galleryStep < COUPLE.galleryPhotos.length - 1 && (
+              <button className="primary-button gallery-next" onClick={walkGallery}>
+                {t.walkOn}<span aria-hidden="true"> →</span>
+              </button>
+            )}
+            <button className="text-button museum-back" onClick={() => setScreen("intro")}>
+              {language === "en" ? "Back to the entrance" : "Volver a la entrada"}
+            </button>
           </section>
         )}
 
@@ -376,12 +453,15 @@ function App() {
           <section className="quiz" key="quiz">
             <div className="quiz-meta">
               <p>{t.question} <strong>{questionIndex + 1}</strong> {t.of} {QUESTIONS.length}</p>
-              <div className="hearts" aria-label={t.mistakesLeft(COUPLE.mistakesAllowed - wrongAnswers)}>
-                {Array.from({ length: COUPLE.mistakesAllowed }, (_, index) => <span className={index < wrongAnswers ? "used" : ""} key={index} aria-hidden="true">♥</span>)}
+              <div className="life-counter" aria-label={t.livesLeft(Math.max(0, COUPLE.totalLives - wrongAnswers))}>
+                <div className="hearts" aria-hidden="true">
+                  {Array.from({ length: COUPLE.totalLives }, (_, index) => <span className={index < wrongAnswers ? "used" : ""} key={index}>♥</span>)}
+                </div>
+                <span className="life-count">{t.livesLeft(Math.max(0, COUPLE.totalLives - wrongAnswers))}</span>
               </div>
             </div>
             <div className="progress-track"><span style={{ width: `${(questionIndex / QUESTIONS.length) * 100}%` }} /></div>
-            <article className="question-card">
+            <article className="question-card paper-sheet">
               <p className="question-kicker">{t.question} {String(questionIndex + 1).padStart(2, "0")}</p>
               <h1>{question.text[language]}</h1>
               <div className="answers">
